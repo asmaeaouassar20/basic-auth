@@ -15,11 +15,20 @@ import org.springframework.security.web.SecurityFilterChain;
 public class Security {
 
 
+    /**
+     *Bean pour encoder les mots de passe avec BCrypt
+     * Cela permet de stocker les mots de passe de manière sécurisée
+     */
     @Bean
     public PasswordEncoder encoder(){
         return new BCryptPasswordEncoder();
     }
 
+
+    /**
+     *Création d'une liste d'utilisateurs en mémoire avec des rôles spécifiques
+     * Ici, nous avons un administrateur et 3 utilisateurs classiques
+     */
     @Bean
     public InMemoryUserDetailsManager createUsers(){
         UserDetails user1=User.builder()
@@ -46,10 +55,18 @@ public class Security {
                 .roles("USER")
                 .build();
 
+
+        // Retourne un gestionnaire d'utilisateurs en mémoire
         return new InMemoryUserDetailsManager(user1,user2,user3,user4);
     }
 
 
+    /**
+     *Configuration des autorisations et de la sécurité HTTP
+     * - Seul un utilisateur avecle rôle ADMIN peut accéder à "/api/creator"
+     * - Toutes les autres requêtes nécessitent une authentification
+     * - Utilisation de l'authentification HTTP basic
+     */
     @Bean
     public SecurityFilterChain authorize(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.authorizeRequests(auth->
